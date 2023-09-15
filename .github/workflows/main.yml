@@ -25,4 +25,4 @@ jobs:
           PAGES_BRANCH: master
           BUILD_DIR: .
           TOKEN: ${{ secrets.TOKEN }}
-          REPOSITORY: VasiLiza.github.io/zola_test/
+          REPOSITORY: VasiLiza/VasiLiza.github.io
