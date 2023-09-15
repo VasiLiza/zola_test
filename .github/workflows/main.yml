@@ -1,22 +1,28 @@
-image: alpine:latest
-
-stages:
-  - build
-  - deploy
-
-build:
-  stage: build
-  script:
-    - apk add --update zola
-    - zola build
-
-deploy:
-  stage: deploy
-  script:
-    - mkdir public
-    - cp -r public/* ./public
-  only:
-    - main  # Определите ветку, на которой должно выполняться развертывание, например, 'main'
-  artifacts:
-    paths:
-      - public/
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/main'
+    steps:
+      - name: 'checkout'
+        uses: actions/checkout@v3.0.0
+      - name: 'build'
+        uses: shalzz/zola-deploy-action@v0.17.2
+        env:
+          PAGES_BRANCH: gh-pages
+          BUILD_DIR: .
+          TOKEN: ${{ secrets.TOKEN }}
+          # BUILD_ONLY: true
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: 'checkout'
+        uses: actions/checkout@v3.0.0
+      - name: 'build and deploy'
+        uses: shalzz/zola-deploy-action@v0.17.2
+        env:
+          PAGES_BRANCH: master
+          BUILD_DIR: .
+          TOKEN: ${{ secrets.PUBLIC_TOKEN }}
+          REPOSITORY: username/username.github.io
