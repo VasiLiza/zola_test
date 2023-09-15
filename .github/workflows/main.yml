@@ -1,15 +1,22 @@
-# On every push this script is executed
-on: push
-name: Build and deploy GH Pages
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3.0.0
-      - name: build_and_deploy
-        uses: shalzz/zola-deploy-action@v0.17.2
-        env:
-          PAGES_BRANCH: gh-pages
-          TOKEN: ${{ secrets.TOKEN }}
+image: alpine:latest
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  script:
+    - apk add --update zola
+    - zola build
+
+deploy:
+  stage: deploy
+  script:
+    - mkdir public
+    - cp -r public/* ./public
+  only:
+    - main  # Определите ветку, на которой должно выполняться развертывание, например, 'main'
+  artifacts:
+    paths:
+      - public/
